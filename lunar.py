@@ -24,6 +24,7 @@ class Application_ui(Frame):
         #top.overrideredirect(True)
         top.attributes('-type', 'dock')
         top.resizable(False,False)
+        top.iconify() # 隐藏窗口
         top.update() # 更新窗口
         curWidth = top.winfo_width() # 获取窗口宽度
         curHeight = top.winfo_height() # 获取窗口高度
@@ -37,6 +38,7 @@ class Application_ui(Frame):
         elif config['place'] == '左下':
             tmpplace = '%dx%d+%d-%d'%(curWidth,curHeight,config['left'],config['bottom'])
         top.geometry(tmpplace)
+        top.deiconify()   # 显示窗口
         top.attributes("-topmost", True)   # 最上层显示
         #top.after(1, lambda: top.focus_force())
         top.focus_force()   # 获取焦点
@@ -181,7 +183,7 @@ class Application(Application_ui):
         set['background'] = '#f6f5f4'
         set.geometry("290x170")
         set.attributes("-topmost", True)
-        #set.iconbitmap("clock.ico")
+        set.iconphoto(False, PhotoImage(file=os.getcwd() + '/.xfce-lunar/clock.png'))
     
         self.setStyle = ttk.Style()
         self.setStyle.configure("TLabel",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
