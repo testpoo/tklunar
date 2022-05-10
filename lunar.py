@@ -21,13 +21,13 @@ class Application_ui(Frame):
         self.position()
 
     def position(self):
-        #top..overrideredirect(True)
+        #top.overrideredirect(True)
         top.attributes('-type', 'dock')
         top.resizable(False,False)
         top.update() # 更新窗口
         curWidth = top.winfo_width() # 获取窗口宽度
         curHeight = top.winfo_height() # 获取窗口高度
-        scnWidth,scnHeight = top.maxsize() # 获取屏幕宽度和高度
+        #scnWidth,scnHeight = top.maxsize() # 获取屏幕宽度和高度
         if config['place'] == '左上':
             tmpplace = '%dx%d+%d+%d'%(curWidth,curHeight,config['left'],config['top'])
         elif config['place'] == '右下':
@@ -187,12 +187,12 @@ class Application(Application_ui):
         self.setStyle.configure("TLabel",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
         self.setStyle.configure("TFrame",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
         self.setStyle.configure("TButton",foreground="#000",background="#ddd",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
-        self.setStyle.configure('TEntry',borderwidth=0,font=(config['font'],config['fontSize']))
-        self.setStyle.configure('TCombobox',borderwidth=0,background="#f6f5f4",relief=FLAT,font=(config['font'],config['fontSize']))
+        #self.setStyle.configure('TEntry',borderwidth=0)
+        self.setStyle.configure('TCombobox',borderwidth=0,background="#ddd",relief=FLAT)
     
         ttk.Label(set, text="位置",anchor='center').place(x=10,y=10,width=45,height=30)
         self.placeComvalue=StringVar(value=config['place'])#窗体自带的文本，新建一个值
-        self.placeComboxlist=ttk.Combobox(set,textvariable=self.placeComvalue,justify='center',state='readonly') #初始化
+        self.placeComboxlist=ttk.Combobox(set,textvariable=self.placeComvalue,justify='center',state='readonly',font=(config['font'],config['fontSize'])) #初始化
         self.placeComboxlist["values"]=("左上","左下","右上","右下")
         #self.placeComboxlist.current(0) #选择第一个
         self.placeComboxlist.bind("<<ComboboxSelected>>",self.go) #绑定事件,(下拉列表框被选中时，绑定go()函数)
@@ -210,7 +210,7 @@ class Application(Application_ui):
             self.secondEntry = StringVar(value=config['top'])
         elif self.placeComvalue.get()[1] == '下':
             self.secondEntry = StringVar(value=config['bottom'])
-        self.second = ttk.Entry(set,justify='center',textvariable=self.secondEntry).place(x=200,y=50,width=80,height=30)
+        self.second = ttk.Entry(set,justify='center',textvariable=self.secondEntry,font=(config['font'],config['fontSize'])).place(x=200,y=50,width=80,height=30)
     
         temp = os.popen('fc-list :lang=Zh')
         fonts = []
@@ -221,12 +221,12 @@ class Application(Application_ui):
     
         ttk.Label(set, text="字体",anchor='center').place(x=10,y=90,width=45,height=30)
         self.fontComvalue=StringVar(value=config['font'])
-        self.fontComboxlist=ttk.Combobox(set,justify='center',textvariable=self.fontComvalue,state='readonly')
+        self.fontComboxlist=ttk.Combobox(set,justify='center',textvariable=self.fontComvalue,state='readonly',font=(config['font'],config['fontSize']))
         self.fontComboxlist["values"]=fonts
         #self.fontComboxlist.current(0)
         self.fontComboxlist.place(x=60,y=90,width=190,height=30)
         self.fontSizeEntry = StringVar(value=config['fontSize'])
-        self.fontSize = ttk.Entry(set,justify='center',textvariable=self.fontSizeEntry).place(x=252,y=90,width=28,height=30)
+        self.fontSize = ttk.Entry(set,justify='center',textvariable=self.fontSizeEntry,font=(config['font'],config['fontSize'])).place(x=252,y=90,width=28,height=30)
         ttk.Button(set,text="保存",command = self.setSave).place(x=10,y=130,width=270,height=30)
         set.mainloop()
 
