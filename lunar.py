@@ -50,8 +50,8 @@ class Application_ui(Frame):
         
         self.style = ttk.Style()
         self.style.configure("TLabel",foreground="#000",background="#fff",font=(config['font'],config['fontSize']))
-        self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
-        self.style.configure("Today.TButton",foreground="#fff",background="#0078d7")
+        self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
+        self.style.configure("Today.TButton",background="#ccc")
         self.style.configure("PerNext.TButton",foreground="#aaa")
         
         ttk.Label(top, text=self.nyr,anchor='w').place(x=10,y=0,width=305,height=22)
