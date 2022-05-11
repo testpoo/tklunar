@@ -247,17 +247,17 @@ def show_month(year, month, day):
         for d in dspre:
             (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
             if d > 9:
-                rilitian.append('*  ' + str(d) + '\n' + lunar_day1(month, day))
+                rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
             else:
-                rilitian.append('*   ' + str(d) + '\n' + lunar_day1(month, day))
+                rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
 
     for d in ds:
         if d != 0:
             (year, month, day) = get_ludar_date(datetime(tm.year, tm.month, d))
             if d > 9:
-                rilitian.append('  ' + str(d) + '\n' + lunar_day1(month, day))
+                rilitian.append(str(d) + '\n' + lunar_day1(month, day))
             else:
-                rilitian.append('   ' + str(d) + '\n' + lunar_day1(month, day))
+                rilitian.append(str(d) + '\n' + lunar_day1(month, day))
 
     tyear = tm.year
     tmonth = tm.month + 1
@@ -271,8 +271,8 @@ def show_month(year, month, day):
     for d in dsnext:
         (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
         if d > 9:
-            rilitian.append('#  ' + str(d) + '\n' + lunar_day1(month, day))
+            rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
         else:
-           rilitian.append('#   ' + str(d) + '\n' + lunar_day1(month, day))
+           rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
 
     return nyr,nlnyr,xinqi,rilitian

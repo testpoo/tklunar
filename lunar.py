@@ -50,10 +50,9 @@ class Application_ui(Frame):
         
         self.style = ttk.Style()
         self.style.configure("TLabel",foreground="#000",background="#fff",font=(config['font'],config['fontSize']))
-        self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
-        self.style.configure("Today.TButton",foreground="#fff",background="#0078d7",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
-        self.style.configure("PerNext.TButton",foreground="#aaa",background="#fff",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
-        self.style.configure("Icon.TButton",foreground="#000",background="#fff",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
+        self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
+        self.style.configure("Today.TButton",foreground="#fff",background="#0078d7")
+        self.style.configure("PerNext.TButton",foreground="#aaa")
         
         ttk.Label(top, text=self.nyr,anchor='w').place(x=10,y=0,width=305,height=22)
         
@@ -82,8 +81,8 @@ class Application_ui(Frame):
             self.button.place(x=45*n,y=140+45*m,width=45,height=45)
             self.button_list.append(self.button)
         
-        ttk.Button(top,text="⮜",style="Icon.TButton",command = self.pre_Cal).place(x=255,y=65,width=30,height=45)
-        ttk.Button(top,text="➤",style="Icon.TButton",command = self.next_Cal).place(x=285,y=65,width=30,height=45)
+        ttk.Button(top,text="⮜",command = self.pre_Cal).place(x=255,y=65,width=30,height=45)
+        ttk.Button(top,text="➤",command = self.next_Cal).place(x=285,y=65,width=30,height=45)
         ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=54,width=315,height=2)
         ttk.Button(top,text="位置和字体设置",command = self.setCal).place(x=0,y=410,width=315,height=45)
         
