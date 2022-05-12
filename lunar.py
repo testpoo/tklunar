@@ -7,6 +7,7 @@ from tkinter import messagebox
 import os
 from lunardata import *
 from config import *
+from pathlib import Path
 
 __author__ = {'name' : 'TestPoo', 'created' : '2022-05-05'}
 
@@ -98,6 +99,12 @@ class Application_ui(Frame):
 class Application(Application_ui):
     def __init__(self, master=None):
         Application_ui.__init__(self, master)
+        # 直接执行和加入一般监视器路径兼容
+        self.filePath = Path(os.getcwd() + "/.xfce-lunar/clock.png")
+        if self.filePath.is_file():
+            self.file = os.getcwd() + "/.xfce-lunar/"
+        else:
+            self.file = os.getcwd() + "/"
 
     def lossfocus(self, event=None):
         if event.widget == top:
@@ -176,7 +183,7 @@ class Application(Application_ui):
             value3 = self.fontComvalue.get()
             value4 = int(self.fontSizeEntry.get())
             tempConfig = "# coding=utf-8\n\nconfig = {'place':'%s','left':%d,'right':%d,'top':%d,'bottom':%d,'font':'%s','fontSize':%d}"%('右下',0,value1,0,value2,value3,value4)
-        with open(os.getcwd() + '/.xfce-lunar/config.py','w',encoding='utf-8') as f:
+        with open(self.file + 'config.py','w',encoding='utf-8') as f:
             f.write(tempConfig)
         messagebox.showinfo('提示','修改成功~！')
 
@@ -188,7 +195,7 @@ class Application(Application_ui):
         set['background'] = '#f6f5f4'
         set.geometry("290x170")
         set.attributes("-topmost", True)
-        set.iconphoto(False, PhotoImage(file=os.getcwd() + '/.xfce-lunar/clock.png'))
+        set.iconphoto(False, PhotoImage(file=self.file + 'clock.png'))
     
         self.setStyle = ttk.Style()
         self.setStyle.configure("TLabel",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
