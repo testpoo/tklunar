@@ -230,7 +230,7 @@ def add_lunar_festival(year, month, day):
             return fest['name']
 
 def add_festival(month, day):
-    festival_date = [{'name':'元旦','date':'1-1'},{'name':'妇女','date':'3-8'},{'name':'劳动节','date':'5-1'},{'name':'国庆','date':'10-1'}]
+    festival_date = [{'name':'元旦','date':'1-1'},{'name':'妇女节','date':'3-8'},{'name':'劳动节','date':'5-1'},{'name':'国庆节','date':'10-1'}]
     date = '-'.join((str(month), str(day)))
     for fest in festival_date:
         if fest['date'] == date:
