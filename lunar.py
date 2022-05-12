@@ -53,6 +53,8 @@ class Application_ui(Frame):
         self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
         self.style.configure("Today.TButton",background="#ccc")
         self.style.configure("PerNext.TButton",foreground="#aaa")
+        self.style.configure("Festival.TButton",foreground="#845a33")
+        self.style.configure("Solarterms.TButton",foreground="#2e4e7e")
         
         ttk.Label(top, text=self.nyr,anchor='w').place(x=10,y=0,width=305,height=22)
         
@@ -76,6 +78,10 @@ class Application_ui(Frame):
                 self.button = ttk.Button(top,text=self.rilitian[i][1:],command = self.pre_Cal,style="PerNext.TButton")
             elif rilitian[i][0] == '#':
                 self.button = ttk.Button(top,text=self.rilitian[i][1:],command = self.next_Cal,style="PerNext.TButton")
+            elif rilitian[i][0] == '@':
+                self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Festival.TButton")
+            elif rilitian[i][0] == '$':
+                self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Solarterms.TButton")
             else:
                 self.button = ttk.Button(top,text=self.rilitian[i])
             self.button.place(x=45*n,y=140+45*m,width=45,height=45)

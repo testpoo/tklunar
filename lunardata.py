@@ -4,6 +4,7 @@
 from datetime import date, datetime
 import calendar
 import itertools
+from solarterms import *
 
 __author__ = {'name' : 'TestPoo', 'created' : '2022-05-05'}
 
@@ -83,21 +84,6 @@ xingqi = ["星期一", "星期二", "星期三", "星期四", "星期五", "星�
 tiangan = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
 dizhi = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
 shengxiao = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"]
-
-# todo：添加节气
-jieqi = [
- "小寒", "大寒", # 1月
- "立春", "雨水", # 2月
- "惊蛰", "春分", # 3月
- "清明", "谷雨", # 4月
- "立夏", "小满", # 5月
- "芒种", "夏至", # 6月
- "小暑", "大暑", # 7月
- "立秋", "处暑", # 8月
- "白露", "秋分", # 9月
- "寒露", "霜降", # 10月
- "立冬", "小雪", # 11月
- "大雪", "冬至"] # 12月
 
 def change_year(num):
     dx = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
@@ -217,6 +203,28 @@ def pre_next(lists):
         dsnext = 0
     return dspre,dsnext
 
+def add_solar_terms(year, month, day):
+    jieqiss = jieqi()
+    jieqis = jieqiss.get_year_jieqi(year)
+    if month < 9:
+        month = '0' + str(month)
+    if day < 9:
+        day = '0' + str(day)
+    time = "-".join((str(year), str(month), str(day)))
+    for jq in jieqis:
+        if jq['time'][:10] == time:
+            return jq['name']
+
+def add_festival(festival, month, day):
+    if festival == 'lunar':
+        festival_date = [{'name':'春节','date':'1-1'},{'name':'元宵','date':'1-15'},{'name':'龙头','date':'2-2'},{'name':'龙头','date':'2-2'},{'name':'上巳','date':'3-3'},{'name':'端午','date':'5-5'},{'name':'七夕','date':'7-7'},{'name':'中元','date':'7-15'},{'name':'中秋','date':'8-15'},{'name':'重阳','date':'9-9'},{'name':'腊八','date':'12-8'}]
+    else:
+        festival_date = [{'name':'元旦','date':'1-1'},{'name':'妇女','date':'3-8'},{'name':'劳动','date':'5-1'},{'name':'国庆','date':'10-1'}]
+    date = '-'.join((str(month), str(day)))
+    for fest in festival_date:
+        if fest['date'] == date:
+            return fest['name']
+
 def show_month(year, month, day):
     if year > 2100 or year < 1901:
         return
@@ -246,16 +254,24 @@ def show_month(year, month, day):
         dspre = [d for d in c.itermonthdays(tyear, tmonth) if d !=0][dspre*(-1):]
         for d in dspre:
             (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
-            if d > 9:
-                rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
+            if add_solar_terms(tyear, tmonth, d):
+                rilitian.append('*' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
+            elif add_festival('lunar', month, day):
+                rilitian.append('*' + str(d) + '\n' + add_festival('lunar',month, day))
+            elif add_festival('gregorian', tmonth, d):
+                rilitian.append('*' + str(d) + '\n' + add_festival('gregorian',tmonth, d))
             else:
                 rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
 
     for d in ds:
         if d != 0:
             (year, month, day) = get_ludar_date(datetime(tm.year, tm.month, d))
-            if d > 9:
-                rilitian.append(str(d) + '\n' + lunar_day1(month, day))
+            if add_solar_terms(tm.year, tm.month, d):
+                rilitian.append('$' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
+            elif add_festival('lunar', month, day):
+                rilitian.append('@' + str(d) + '\n' + add_festival('lunar',month, day))
+            elif add_festival('gregorian', tm.month, d):
+                rilitian.append('@' + str(d) + '\n' + add_festival('gregorian',tm.month, d))
             else:
                 rilitian.append(str(d) + '\n' + lunar_day1(month, day))
 
@@ -270,9 +286,13 @@ def show_month(year, month, day):
         dsnext = [d for d in c.itermonthdays(tyear, tmonth) if d !=0][0:dsnext]
     for d in dsnext:
         (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
-        if d > 9:
-            rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
+        if add_solar_terms(tyear, tmonth, d):
+            rilitian.append('#' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
+        elif add_festival('lunar', month, day):
+            rilitian.append('#' + str(d) + '\n' + add_festival('lunar',month, day))
+        elif add_festival('gregorian', tmonth, d):
+            rilitian.append('#' + str(d) + '\n' + add_festival('gregorian',tmonth, d))
         else:
-           rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
+            rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
 
     return nyr,nlnyr,xinqi,rilitian
