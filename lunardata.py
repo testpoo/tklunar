@@ -73,7 +73,6 @@ START_YEAR = 1901
 month_DAY_BIT = 12
 month_NUM_BIT = 13
 
-#　todo：正月初一 == 春节 腊月二十九/三十 == 除夕
 yuefeng = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "冬月", "腊月"]
 riqi = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十",
 "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "廿十",
@@ -152,7 +151,6 @@ def get_ludar_date(tm):
     chunjie_d = (code_data >> 0) & 0x1f
     chunjie_m = (code_data >> 5) & 0x3
     span_days = (tm - datetime(year, chunjie_m, chunjie_d)).days
-    #print("span_day: ", days_tmp, span_days, chunjie_m, chunjie_d)
 
     # 日期在该年农历之后
     if (span_days >= 0):
@@ -206,20 +204,33 @@ def pre_next(lists):
 def add_solar_terms(year, month, day):
     jieqiss = jieqi()
     jieqis = jieqiss.get_year_jieqi(year)
-    if month < 9:
-        month = '0' + str(month)
-    if day < 9:
-        day = '0' + str(day)
+    month = '%02d' % month
+    day = '%02d' % day
     time = "-".join((str(year), str(month), str(day)))
     for jq in jieqis:
         if jq['time'][:10] == time:
             return jq['name']
 
-def add_festival(festival, month, day):
-    if festival == 'lunar':
-        festival_date = [{'name':'春节','date':'1-1'},{'name':'元宵','date':'1-15'},{'name':'龙头','date':'2-2'},{'name':'龙头','date':'2-2'},{'name':'上巳','date':'3-3'},{'name':'端午','date':'5-5'},{'name':'七夕','date':'7-7'},{'name':'中元','date':'7-15'},{'name':'中秋','date':'8-15'},{'name':'重阳','date':'9-9'},{'name':'腊八','date':'12-8'}]
-    else:
-        festival_date = [{'name':'元旦','date':'1-1'},{'name':'妇女','date':'3-8'},{'name':'劳动','date':'5-1'},{'name':'国庆','date':'10-1'}]
+def add_lunar_festival(year, month, day):
+    lastday = ''
+    if month == 12:
+        tmp = g_lunar_month_day[year - START_YEAR]
+        if tmp & (1<<(11)):
+            lastday = '12-30'
+        else:
+            lastday = '12-29'
+    festival_date = [{'name':'春节','date':'1-1'},{'name':'除夕','date':lastday},{'name':'元宵节','date':'1-15'},
+                     {'name':'龙头','date':'2-2'},{'name':'上巳节','date':'3-3'},{'name':'端午节','date':'5-5'},
+                     {'name':'七夕节','date':'7-7'},{'name':'中元节','date':'7-15'},{'name':'中秋节','date':'8-15'},
+                     {'name':'重阳节','date':'9-9'},{'name':'腊八节','date':'12-8'}
+                    ]
+    date = '-'.join((str(month), str(day)))
+    for fest in festival_date:
+        if fest['date'] == date:
+            return fest['name']
+
+def add_festival(month, day):
+    festival_date = [{'name':'元旦','date':'1-1'},{'name':'妇女','date':'3-8'},{'name':'劳动节','date':'5-1'},{'name':'国庆','date':'10-1'}]
     date = '-'.join((str(month), str(day)))
     for fest in festival_date:
         if fest['date'] == date:
@@ -235,7 +246,7 @@ def show_month(year, month, day):
 
     (year, month, day) = get_ludar_date(tm)
     nyr = "".join((str(tm.year),"年",str(tm.month),"月",str(tm.day),"日","  ",str(week_str(tm))))
-    nlnyr = "".join(("农历 ",lunar_year(year),"年","  ",change_year(year),"年",lunar_month(month),lunar_day(day))) # 根据数组索引确定
+    nlnyr = "".join((lunar_year(year),"年","  ",change_year(year),"年",lunar_month(month),lunar_day(day))) # 根据数组索引确定
     xinqi = ("一","二","三","四","五","六","日")
 
     c = calendar.Calendar(0)
@@ -256,10 +267,10 @@ def show_month(year, month, day):
             (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
             if add_solar_terms(tyear, tmonth, d):
                 rilitian.append('*' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
-            elif add_festival('lunar', month, day):
-                rilitian.append('*' + str(d) + '\n' + add_festival('lunar',month, day))
-            elif add_festival('gregorian', tmonth, d):
-                rilitian.append('*' + str(d) + '\n' + add_festival('gregorian',tmonth, d))
+            elif add_lunar_festival(year, month, day):
+                rilitian.append('*' + str(d) + '\n' + add_lunar_festival(year,month, day))
+            elif add_festival(tmonth, d):
+                rilitian.append('*' + str(d) + '\n' + add_festival(tmonth, d))
             else:
                 rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
 
@@ -268,10 +279,10 @@ def show_month(year, month, day):
             (year, month, day) = get_ludar_date(datetime(tm.year, tm.month, d))
             if add_solar_terms(tm.year, tm.month, d):
                 rilitian.append('$' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
-            elif add_festival('lunar', month, day):
-                rilitian.append('@' + str(d) + '\n' + add_festival('lunar',month, day))
-            elif add_festival('gregorian', tm.month, d):
-                rilitian.append('@' + str(d) + '\n' + add_festival('gregorian',tm.month, d))
+            elif add_lunar_festival(year, month, day):
+                rilitian.append('@' + str(d) + '\n' + add_lunar_festival(year,month, day))
+            elif add_festival(tm.month, d):
+                rilitian.append('@' + str(d) + '\n' + add_festival(tm.month, d))
             else:
                 rilitian.append(str(d) + '\n' + lunar_day1(month, day))
 
@@ -288,10 +299,10 @@ def show_month(year, month, day):
         (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
         if add_solar_terms(tyear, tmonth, d):
             rilitian.append('#' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
-        elif add_festival('lunar', month, day):
-            rilitian.append('#' + str(d) + '\n' + add_festival('lunar',month, day))
-        elif add_festival('gregorian', tmonth, d):
-            rilitian.append('#' + str(d) + '\n' + add_festival('gregorian',tmonth, d))
+        elif add_lunar_festival(year, month, day):
+            rilitian.append('#' + str(d) + '\n' + add_lunar_festival(year,month, day))
+        elif add_festival(tmonth, d):
+            rilitian.append('#' + str(d) + '\n' + add_festival(tmonth, d))
         else:
             rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
 
