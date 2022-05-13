@@ -220,7 +220,7 @@ def add_lunar_festival(year, month, day):
         else:
             lastday = '12-29'
     festival_date = [{'name':'春节','date':'1-1'},{'name':'除夕','date':lastday},{'name':'元宵节','date':'1-15'},
-                     {'name':'龙头','date':'2-2'},{'name':'上巳节','date':'3-3'},{'name':'端午节','date':'5-5'},
+                     {'name':'龙头节','date':'2-2'},{'name':'上巳节','date':'3-3'},{'name':'端午节','date':'5-5'},
                      {'name':'七夕节','date':'7-7'},{'name':'中元节','date':'7-15'},{'name':'中秋节','date':'8-15'},
                      {'name':'重阳节','date':'9-9'},{'name':'腊八节','date':'12-8'}
                     ]

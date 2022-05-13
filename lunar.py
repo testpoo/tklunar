@@ -15,9 +15,10 @@ __author__ = {'name' : 'TestPoo', 'created' : '2022-05-05'}
 class Application_ui(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
+        self.dpi=int(os.popen('xrdb -query').readlines()[3].split(':')[1].replace('\t','').replace('\n',''))/96
         self.master.title('万年历')
         self.master["bg"]='#fff'
-        self.master.geometry('315x455')
+        self.master.geometry('%dx%d'%(315*self.dpi,455*self.dpi))
         self.createWidgets()
         self.position()
 
@@ -57,15 +58,15 @@ class Application_ui(Frame):
         self.style.configure("Festival.TButton",foreground="#845a33")
         self.style.configure("Solarterms.TButton",foreground="#2e4e7e")
         
-        ttk.Label(top, text=self.nyr,anchor='w').place(x=10,y=0,width=305,height=22)
+        ttk.Label(top, text=self.nyr,anchor='w').place(x=10*self.dpi,y=0,width=305*self.dpi,height=22*self.dpi)
         
-        ttk.Label(top, text=self.nlnyr,anchor='w').place(x=10,y=22,width=305,height=23)
+        ttk.Label(top, text=self.nlnyr,anchor='w').place(x=10*self.dpi,y=22*self.dpi,width=305*self.dpi,height=23*self.dpi)
         
         self.label1 = ttk.Label(top, text=self.nyr[0:7],anchor='w')
-        self.label1.place(x=10,y=65,width=245,height=45)
+        self.label1.place(x=10,y=65*self.dpi,width=245*self.dpi,height=45*self.dpi)
         
         for i in range(len(self.xinqi)):
-            ttk.Label(top,text=self.xinqi[i],anchor='center').place(x=45*i,y=110,width=45,height=30)
+            ttk.Label(top,text=self.xinqi[i],anchor='center').place(x=45*self.dpi*i,y=110*self.dpi,width=45*self.dpi,height=30*self.dpi)
         
         self.button_list = []
         self.addButton(self.rilitian)
@@ -85,13 +86,13 @@ class Application_ui(Frame):
                 self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Solarterms.TButton")
             else:
                 self.button = ttk.Button(top,text=self.rilitian[i])
-            self.button.place(x=45*n,y=140+45*m,width=45,height=45)
+            self.button.place(x=45*self.dpi*n,y=140*self.dpi+45*self.dpi*m,width=45*self.dpi,height=45*self.dpi)
             self.button_list.append(self.button)
         
-        ttk.Button(top,text="⮜",command = self.pre_Cal).place(x=255,y=65,width=30,height=45)
-        ttk.Button(top,text="➤",command = self.next_Cal).place(x=285,y=65,width=30,height=45)
-        ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=54,width=315,height=2)
-        ttk.Button(top,text="位置和字体设置",command = self.setCal).place(x=0,y=410,width=315,height=45)
+        ttk.Button(top,text="⮜",command = self.pre_Cal).place(x=255*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
+        ttk.Button(top,text="➤",command = self.next_Cal).place(x=285*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
+        ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=54*self.dpi,width=315*self.dpi,height=2*self.dpi)
+        ttk.Button(top,text="位置和字体设置",command = self.setCal).place(x=0,y=410*self.dpi,width=315*self.dpi,height=45*self.dpi)
         
         top.bind('<FocusOut>', self.lossfocus)   # 失去焦点时，关闭窗口
 
@@ -193,7 +194,7 @@ class Application(Application_ui):
         set.title("万年历设置")
         set.resizable(0,0)
         set['background'] = '#f6f5f4'
-        set.geometry("290x170")
+        set.geometry("%dx%d"%(290*self.dpi,170*self.dpi))
         set.attributes("-topmost", True)
         set.iconphoto(False, PhotoImage(file=self.file + 'clock.png'))
     
@@ -205,27 +206,27 @@ class Application(Application_ui):
         self.setStyle.configure('TCombobox',borderwidth=0,background="#d9d9d9",relief=FLAT)
         self.setStyle.configure("TScrollbar",borderwidth=-3)
     
-        ttk.Label(set, text="位置",anchor='center').place(x=10,y=10,width=45,height=30)
+        ttk.Label(set, text="位置",anchor='center').place(x=10*self.dpi,y=10*self.dpi,width=45*self.dpi,height=30*self.dpi)
         self.placeComvalue=StringVar(value=config['place'])#窗体自带的文本，新建一个值
         self.placeComboxlist=ttk.Combobox(set,textvariable=self.placeComvalue,justify='center',state='readonly',font=(config['font'],config['fontSize'])) #初始化
         self.placeComboxlist["values"]=("左上","左下","右上","右下")
         #self.placeComboxlist.current(0) #选择第一个
         self.placeComboxlist.bind("<<ComboboxSelected>>",self.go) #绑定事件,(下拉列表框被选中时，绑定go()函数)
-        self.placeComboxlist.place(x=60,y=10,width=220,height=30)
+        self.placeComboxlist.place(x=60*self.dpi,y=10*self.dpi,width=220*self.dpi,height=30*self.dpi)
         self.varlabel1 = StringVar(value=config['place'][0])
-        ttk.Label(set,textvariable=self.varlabel1,anchor='center').place(x=10,y=50,width=45,height=30)
+        ttk.Label(set,textvariable=self.varlabel1,anchor='center').place(x=10*self.dpi,y=50*self.dpi,width=45*self.dpi,height=30*self.dpi)
         if self.placeComvalue.get()[0] == '左':
             self.firstEntry = StringVar(value=config['left'])
         elif self.placeComvalue.get()[0] == '右':
             self.firstEntry = StringVar(value=config['right'])
-        self.first = ttk.Entry(set,justify='center',textvariable=self.firstEntry).place(x=60,y=50,width=80,height=30)
+        self.first = ttk.Entry(set,justify='center',textvariable=self.firstEntry).place(x=60*self.dpi,y=50*self.dpi,width=80*self.dpi,height=30*self.dpi)
         self.varlabel2 = StringVar(value=config['place'][1])
-        ttk.Label(set,textvariable=self.varlabel2,anchor='center').place(x=150,y=50,width=45,height=30)
+        ttk.Label(set,textvariable=self.varlabel2,anchor='center').place(x=150*self.dpi,y=50*self.dpi,width=45*self.dpi,height=30*self.dpi)
         if self.placeComvalue.get()[1] == '上':
             self.secondEntry = StringVar(value=config['top'])
         elif self.placeComvalue.get()[1] == '下':
             self.secondEntry = StringVar(value=config['bottom'])
-        self.second = ttk.Entry(set,justify='center',textvariable=self.secondEntry,font=(config['font'],config['fontSize'])).place(x=200,y=50,width=80,height=30)
+        self.second = ttk.Entry(set,justify='center',textvariable=self.secondEntry,font=(config['font'],config['fontSize'])).place(x=200*self.dpi,y=50*self.dpi,width=80*self.dpi,height=30*self.dpi)
     
         temp = os.popen('fc-list :lang=Zh')
         fonts = []
@@ -234,15 +235,15 @@ class Application(Application_ui):
             if line not in fonts:
                 fonts.append(line)
     
-        ttk.Label(set, text="字体",anchor='center').place(x=10,y=90,width=45,height=30)
+        ttk.Label(set, text="字体",anchor='center').place(x=10*self.dpi,y=90*self.dpi,width=45*self.dpi,height=30*self.dpi)
         self.fontComvalue=StringVar(value=config['font'])
         self.fontComboxlist=ttk.Combobox(set,justify='center',textvariable=self.fontComvalue,state='readonly',font=(config['font'],config['fontSize']))
         self.fontComboxlist["values"]=fonts
         #self.fontComboxlist.current(0)
-        self.fontComboxlist.place(x=60,y=90,width=190,height=30)
+        self.fontComboxlist.place(x=60*self.dpi,y=90*self.dpi,width=190*self.dpi,height=30*self.dpi)
         self.fontSizeEntry = StringVar(value=config['fontSize'])
-        self.fontSize = ttk.Entry(set,justify='center',textvariable=self.fontSizeEntry,font=(config['font'],config['fontSize'])).place(x=252,y=90,width=28,height=30)
-        ttk.Button(set,text="保存",command = self.setSave).place(x=10,y=130,width=270,height=30)
+        self.fontSize = ttk.Entry(set,justify='center',textvariable=self.fontSizeEntry,font=(config['font'],config['fontSize'])).place(x=252*self.dpi,y=90*self.dpi,width=28*self.dpi,height=30*self.dpi)
+        ttk.Button(set,text="保存",command = self.setSave).place(x=10*self.dpi,y=130*self.dpi,width=270*self.dpi,height=30*self.dpi)
         set.mainloop()
 
 if __name__ == "__main__":
