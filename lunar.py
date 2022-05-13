@@ -201,8 +201,9 @@ class Application(Application_ui):
         self.setStyle.configure("TLabel",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
         self.setStyle.configure("TFrame",foreground="#000",background="#f6f5f4",borderwidth=0,font=(config['font'],config['fontSize']))
         self.setStyle.configure("TButton",foreground="#000",background="#ddd",borderwidth=0,activebackground="#fff",highlightbackground="#fff",font=(config['font'],config['fontSize']),relief=FLAT)
-        #self.setStyle.configure('TEntry',borderwidth=0)
-        self.setStyle.configure('TCombobox',borderwidth=0,background="#ddd",relief=FLAT)
+        self.setStyle.configure('TEntry',borderwidth=0)
+        self.setStyle.configure('TCombobox',borderwidth=0,background="#d9d9d9",relief=FLAT)
+        self.setStyle.configure("TScrollbar",borderwidth=-3)
     
         ttk.Label(set, text="位置",anchor='center').place(x=10,y=10,width=45,height=30)
         self.placeComvalue=StringVar(value=config['place'])#窗体自带的文本，新建一个值
