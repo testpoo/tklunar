@@ -15,12 +15,23 @@ __author__ = {'name' : 'TestPoo', 'created' : '2022-05-05'}
 class Application_ui(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
-        self.dpi=int(os.popen('xrdb -query').readlines()[3].split(':')[1].replace('\t','').replace('\n',''))/96
+        self.dpi=self.xdpi()
         self.master.title('万年历')
         self.master["bg"]='#fff'
         self.master.geometry('%dx%d'%(315*self.dpi,455*self.dpi))
         self.createWidgets()
         self.position()
+
+    def xdpi(self):
+        temps = os.popen('xrdb -query').readlines()
+
+        for temp in temps:
+            temp = temp.split(':')
+            if temp[0] == 'Xft.dpi':
+                self.xdpi = int(temp[1].replace('\n','').replace('\t',''))/96
+            else:
+                self.xdpi = 1
+        return self.xdpi
 
     def position(self):
         #top.overrideredirect(True)
