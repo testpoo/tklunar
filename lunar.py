@@ -29,6 +29,7 @@ class Application_ui(Frame):
             temp = temp.split(':')
             if temp[0] == 'Xft.dpi':
                 self.xdpi = int(temp[1].replace('\n','').replace('\t',''))/96
+                break
             else:
                 self.xdpi = 1
         return self.xdpi
@@ -62,8 +63,8 @@ class Application_ui(Frame):
         self.nyr,self.nlnyr,self.xinqi,self.rilitian = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
         
         self.style = ttk.Style()
-        self.style.configure("TLabel",foreground="#000",background="#fff",font=(config['font'],config['fontSize']))
-        self.style.configure("Title.TLabel",foreground="#2e4e7e",font=(config['font'],config['fontSize'],"bold"))
+        self.style.configure("TLabel",foreground="#000",background="#fff",font=(config['font'],config['fontSize'] + 2))
+        self.style.configure("Title.TLabel",foreground="#2e4e7e",font=(config['font'],config['fontSize'] + 2,"bold"))
         self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
         self.style.configure("Today.TButton",background="#ccc")
         self.style.configure("PerNext.TButton",foreground="#aaa")
