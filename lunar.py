@@ -63,16 +63,16 @@ class Application_ui(Frame):
         
         self.style = ttk.Style()
         self.style.configure("TLabel",foreground="#000",background="#fff",font=(config['font'],config['fontSize']))
+        self.style.configure("Title.TLabel",foreground="#2e4e7e",font=(config['font'],config['fontSize'],"bold"))
         self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,font=(config['font'],config['fontSize']),justify='center',relief=FLAT)
         self.style.configure("Today.TButton",background="#ccc")
         self.style.configure("PerNext.TButton",foreground="#aaa")
         self.style.configure("Festival.TButton",foreground="#845a33")
         self.style.configure("Solarterms.TButton",foreground="#2e4e7e")
+        self.style.configure("Set.TButton",foreground="#2e4e7e",justify='left')
         
-        ttk.Label(top, text=self.nyr,anchor='w').place(x=10*self.dpi,y=0,width=305*self.dpi,height=22*self.dpi)
-        
-        ttk.Label(top, text=self.nlnyr,anchor='w').place(x=10*self.dpi,y=22*self.dpi,width=305*self.dpi,height=23*self.dpi)
-        
+        ttk.Label(top, text=self.nyr,anchor='w',style="Title.TLabel").place(x=10*self.dpi,y=0,width=305*self.dpi,height=22*self.dpi)
+        ttk.Label(top, text=self.nlnyr,anchor='w',style="Title.TLabel").place(x=10*self.dpi,y=22*self.dpi,width=305*self.dpi,height=23*self.dpi)
         self.label1 = ttk.Label(top, text=self.nyr[0:7],anchor='w')
         self.label1.place(x=10,y=65*self.dpi,width=245*self.dpi,height=45*self.dpi)
         
@@ -103,7 +103,7 @@ class Application_ui(Frame):
         ttk.Button(top,text="⮜",command = self.pre_Cal).place(x=255*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
         ttk.Button(top,text="➤",command = self.next_Cal).place(x=285*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
         ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=54*self.dpi,width=315*self.dpi,height=2*self.dpi)
-        ttk.Button(top,text="位置和字体设置",command = self.setCal).place(x=0,y=410*self.dpi,width=315*self.dpi,height=45*self.dpi)
+        ttk.Button(top,text="位置和字体设置",command = self.setCal,style="Set.TButton").place(x=0,y=410*self.dpi,width=315*self.dpi,height=45*self.dpi)
         
         top.bind('<FocusOut>', self.lossfocus)   # 失去焦点时，关闭窗口
 
