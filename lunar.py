@@ -70,6 +70,8 @@ class Application_ui(Frame):
         self.style.configure("PerNext.TButton",foreground="#aaa")
         self.style.configure("Festival.TButton",foreground="#845a33")
         self.style.configure("Solarterms.TButton",foreground="#2e4e7e")
+        self.style.configure("FestivalT.TButton",foreground="#845a33",background="#ccc")
+        self.style.configure("SolartermsT.TButton",foreground="#2e4e7e",background="#ccc")
         self.style.configure("Set.TButton",foreground="#2e4e7e",justify='left')
         
         ttk.Label(top, text=self.nyr,anchor='w',style="Title.TLabel").place(x=10*self.dpi,y=0,width=305*self.dpi,height=22*self.dpi)
@@ -93,9 +95,15 @@ class Application_ui(Frame):
             elif rilitian[i][0] == '#':
                 self.button = ttk.Button(top,text=self.rilitian[i][1:],command = self.next_Cal,style="PerNext.TButton")
             elif rilitian[i][0] == '@':
-                self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Festival.TButton")
+                if rilitian[i][1:].split('\n')[0] == str(datetime.now().day):
+                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="FestivalT.TButton")
+                else:
+                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Festival.TButton")
             elif rilitian[i][0] == '$':
-                self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Solarterms.TButton")
+                if rilitian[i][1:].split('\n')[0] == str(datetime.now().day):
+                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="SolartermsT.TButton")
+                else:
+                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Solarterms.TButton")
             else:
                 self.button = ttk.Button(top,text=self.rilitian[i])
             self.button.place(x=45*self.dpi*n,y=140*self.dpi+45*self.dpi*m,width=45*self.dpi,height=45*self.dpi)
