@@ -152,6 +152,10 @@ class Application(Application_ui):
         value1 = self.firstEntry.get()
         value2 = self.secondEntry.get()
         value3 = int(self.thirdEntry.get())
+        if value1[0] not in ['+','-']:
+            value1 = '+' + value1
+        if value2[0] not in ['+','-']:
+            value2 = '+' + value2
         tempConfig = "# coding=utf-8\n\nconfig = {'lright':'%s','tbottom':'%s','fontSize':%d}"%(value1,value2,value3)
         # 
         if os.path.exists(os.getcwd()+'/.xfce-lunar/config.py'):
