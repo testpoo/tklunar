@@ -3,174 +3,187 @@
 
 from tkinter import *
 from tkinter import ttk
-import os
-import sys
+import os,sys,platform
 from lunardata import *
-from config import *
 
-__author__ = {'name' : 'TestPoo', 'created' : '2022-05-05', 'modify' : '2022-10-19'}
+__author__ = {'name' : 'TestPoo', 'created' : '2022-05-05', 'modify' : '2022-11-10'}
 
 #**实现界面功能****
 class Application_ui(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
-        self.dpi=self.xdpi()
         self.master.title('万年历')
         self.master["bg"]='#fff'
         self.createWidgets()
         self.position()
 
-    def xdpi(self):
-        self.xdpi = 1
-        temps = os.popen('xrdb -query').readlines()
-        if temps != '':
-            for temp in temps:
-                temp = temp.split(':')
-                if temp[0] == 'Xft.dpi':
-                    self.xdpi = int(temp[1].replace('\n','').replace('\t',''))/96
-                break
-        return self.xdpi
 
     def position(self):
-        top.attributes('-type', 'dock')
         top.resizable(False,False)
-        curWidth = top.winfo_width() # 获取窗口宽度
-        curHeight = top.winfo_height() # 获取窗口高度
-        tmpplace = '%dx%d%s%s'%(curWidth,curHeight,config['lright'],config['tbottom'])
+        curWidth = 900
+        curHeight = 600
+        scnWidth,scnHeight = top.maxsize() # 获取屏幕宽度和高度
+        tmpplace = '%dx%d+%d+%d'%(curWidth,curHeight,(scnWidth-curWidth)/2,(scnHeight-curHeight)/2)
         top.geometry(tmpplace)
-        top.geometry('%dx%d'%(315*self.dpi,455*self.dpi))
-        top.attributes("-topmost", True)   # 最上层显示
-        top.focus_force()   # 获取焦点
+        top.iconphoto(False, PhotoImage(file=os.getcwd() + '/calendar.png'))
 
     def createWidgets(self):
         top = self.winfo_toplevel()
 
-        self.nyr,self.nlnyr,self.xinqi,self.rilitian = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
-        
+        self.cdate,self.clunar,self.cweek,self.cday = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
+
         self.style = ttk.Style()
-        self.style.configure("TLabel",foreground="#000",background="#fff",font=('',config['fontSize']+2))
-        self.style.configure("Title.TLabel",foreground="#2e4e7e",font=('',config['fontSize']+2,"bold"))
-        self.style.configure("TButton",foreground="#000",background="#fff",borderwidth=0,font=('',config['fontSize']),justify='center',relief=FLAT)
-        self.style.configure("Today.TButton",background="#ccc")
-        self.style.configure("PerNext.TButton",foreground="#aaa")
-        self.style.configure("Festival.TButton",foreground="#845a33")
-        self.style.configure("Solarterms.TButton",foreground="#2e4e7e")
-        self.style.configure("FestivalT.TButton",foreground="#845a33",background="#ccc")
-        self.style.configure("SolartermsT.TButton",foreground="#2e4e7e",background="#ccc")
-        self.style.configure("Set.TButton",foreground="#2e4e7e",justify='left')
-        
-        ttk.Label(top, text=self.nyr,anchor='w',style="Title.TLabel").place(x=10*self.dpi,y=0,width=305*self.dpi,height=22*self.dpi)
-        ttk.Label(top, text=self.nlnyr,anchor='w',style="Title.TLabel").place(x=10*self.dpi,y=22*self.dpi,width=305*self.dpi,height=23*self.dpi)
-        self.label1 = ttk.Label(top, text=self.nyr[0:7],anchor='w')
-        self.label1.place(x=10,y=65*self.dpi,width=245*self.dpi,height=45*self.dpi)
-        
-        for i in range(len(self.xinqi)):
-            ttk.Label(top,text=self.xinqi[i],anchor='center').place(x=45*self.dpi*i,y=110*self.dpi,width=45*self.dpi,height=30*self.dpi)
+        self.style.configure("Pn.TButton",foreground="#303133",background="#fff",borderwidth=0,font=('Helvetica',12),justify='center',relief=FLAT)
+        self.style.configure("To.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('Microsoft YaHei',12),justify='center',relief=FLAT)
+
+        Label(top, text=self.cdate + " "*10 + self.clunar,anchor='center',fg="#161616",bg="#fff",font=('Microsoft YaHei',12,'bold')).place(x=110,y=0,width=700,height=40)
+        ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=40,width=900,height=2)
+
+        if platform.system() == 'Windows':
+            self.preYear = Button(top,text="◀",command = self.pre_year,fg="#303133",bg="#fff",bd=0,font=('Helvetica',12))
+            self.nextYear = Button(top,text="▶",command = self.next_year,fg="#303133",bg="#fff",bd=0,font=('Helvetica',12))
+            self.preMonth = Button(top,text="◀",command = self.pre_month,fg="#303133",bg="#fff",bd=0,font=('Helvetica',12))
+            self.nextMonth = Button(top,text="▶",command = self.next_month,fg="#303133",bg="#fff",bd=0,font=('Helvetica',12))
+            self.today = Button(top,text="返回今天",command = self.today,fg="#2ca7f8",bg="#fff",bd=0,font=('Microsoft YaHei',12))
+        elif platform.system() == 'Linux':
+            self.preYear = ttk.Button(top,text="◀",command = self.pre_year,style="Pn.TButton")
+            self.nextYear = ttk.Button(top,text="▶",command = self.next_year,style="Pn.TButton")
+            self.preMonth = ttk.Button(top,text="◀",command = self.pre_month,style="Pn.TButton")
+            self.nextMonth = ttk.Button(top,text="▶",command = self.next_month,style="Pn.TButton")
+            self.today = ttk.Button(top,text="返回今天",command = self.today,style="To.TButton")
+
+        self.preYear.place(x=110,y=42,width=30,height=68)
+        self.cyear = Label(top, text=self.cdate[0:5],anchor='center',fg="#303133",bg="#fff",font=('Microsoft YaHei',12))
+        self.cyear.place(x=140,y=42,width=80,height=68)
+        self.nextYear.place(x=220,y=42,width=30,height=68)
+        self.preMonth.place(x=250,y=42,width=30,height=68)
+        self.cmonth = Label(top, text=self.cdate[5:8],anchor='center',fg="#303133",bg="#fff",font=('Microsoft YaHei',12))
+        self.cmonth.place(x=280,y=42,width=60,height=68)
+        self.nextMonth.place(x=340,y=42,width=30,height=68)
+        self.today.place(x=690,y=42,width=100,height=68)
+
+        for i in range(len(self.cweek)):
+            Label(top,text='周' + self.cweek[i],anchor='center',fg="#363636",bg="#eee",font=('Microsoft YaHei',10)).place(x=100 + 100*i,y=110,width=100,height=50)
         
         self.button_list = []
-        self.addButton(self.rilitian)
+        self.addButton(self.cday)
         
-    def addButton(self,rilitian):
-        for i in range(len(self.rilitian)):
+    def addButton(self,cday):
+
+        self.style.configure(".TButton",foreground="#fff",background="#2ca7f8",borderwidth=0,font=('Microsoft YaHei',10),justify='center',relief=FLAT)
+        self.style.configure("*.TButton",foreground="#a8a8a8",background="#fff",borderwidth=0,font=('Microsoft YaHei',10),justify='center',relief=FLAT)
+        self.style.configure("@.TButton",foreground="#e7493e",background="#fff",borderwidth=0,font=('Microsoft YaHei',10),justify='center',relief=FLAT)
+        self.style.configure("$.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('Microsoft YaHei',10),justify='center',relief=FLAT)
+        self.style.configure("A.TButton",foreground="#363636",background="#fff",borderwidth=0,font=('Microsoft YaHei',10),justify='center',relief=FLAT)
+        for i in range(len(self.cday)):
             m,n = divmod(i,7)
-            if rilitian[i].split('\n')[0].strip() == str(datetime.now().day):
-                self.button = ttk.Button(top,text=self.rilitian[i],style="Today.TButton")
-            elif rilitian[i][0] == '*':
-                self.button = ttk.Button(top,text=self.rilitian[i][1:],command = self.pre_Cal,style="PerNext.TButton")
-            elif rilitian[i][0] == '#':
-                self.button = ttk.Button(top,text=self.rilitian[i][1:],command = self.next_Cal,style="PerNext.TButton")
-            elif rilitian[i][0] == '@':
-                if rilitian[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="FestivalT.TButton")
+            if cday[i].split('\n')[0].strip() == str(datetime.now().day):
+                if platform.system() == 'Windows':
+                    self.button = Button(top,text=self.cday[i],fg="#fff",bg="#2ca7f8",bd=0,font=('Microsoft YaHei',10))
+                elif platform.system() == 'Linux':
+                    self.button = ttk.Button(top,text=self.cday[i],style=".TButton")
+            elif cday[i][0] == '*':
+                if platform.system() == 'Windows':
+                    self.button = Button(top,text=self.cday[i][1:],command = self.pre_month,fg="#a8a8a8",bg="#fff",bd=0,font=('Microsoft YaHei',10))
+                elif platform.system() == 'Linux':
+                    self.button = ttk.Button(top,text=self.cday[i][1:],style="*.TButton")
+            elif cday[i][0] == '#':
+                if platform.system() == 'Windows':
+                    self.button = Button(top,text=self.cday[i][1:],command = self.next_month,fg="#a8a8a8",bg="#fff",bd=0,font=('Microsoft YaHei',10))
+                elif platform.system() == 'Linux':
+                    self.button = ttk.Button(top,text=self.cday[i][1:],style="*.TButton")
+            elif cday[i][0] == '@':
+                if cday[i][1:].split('\n')[0] == str(datetime.now().day):
+                    if platform.system() == 'Windows':
+                        self.button = Button(top,text=self.cday[i][1:],fg="#e7493e",bg="#fff",bd=0,font=('Microsoft YaHei',10,'bold'))
+                    elif platform.system() == 'Linux':
+                        self.button = ttk.Button(top,text=self.cday[i][1:],style="@.TButton")
                 else:
-                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Festival.TButton")
-            elif rilitian[i][0] == '$':
-                if rilitian[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="SolartermsT.TButton")
+                    if platform.system() == 'Windows':
+                        self.button = Button(top,text=self.cday[i][1:],fg="#e7493e",bg="#fff",bd=0,font=('Microsoft YaHei',10,'bold'))
+                    elif platform.system() == 'Linux':
+                        self.button = ttk.Button(top,text=self.cday[i][1:],style="@.TButton")
+            elif cday[i][0] == '$':
+                if cday[i][1:].split('\n')[0] == str(datetime.now().day):
+                    if platform.system() == 'Windows':
+                        self.button = Button(top,text=self.cday[i][1:],fg="#2ca7f8",bg="#fff",bd=0,font=('Microsoft YaHei',10,'bold'))
+                    elif platform.system() == 'Linux':
+                        self.button = ttk.Button(top,text=self.cday[i][1:],style="$.TButton")
                 else:
-                    self.button = ttk.Button(top,text=self.rilitian[i][1:],style="Solarterms.TButton")
+                    if platform.system() == 'Windows':
+                        self.button = Button(top,text=self.cday[i][1:],fg="#2ca7f8",bg="#fff",bd=0,font=('Microsoft YaHei',10,'bold'))
+                    elif platform.system() == 'Linux':
+                        self.button = ttk.Button(top,text=self.cday[i][1:],style="$.TButton")
             else:
-                self.button = ttk.Button(top,text=self.rilitian[i])
-            self.button.place(x=45*self.dpi*n,y=140*self.dpi+45*self.dpi*m,width=45*self.dpi,height=45*self.dpi)
+                if platform.system() == 'Windows':
+                    self.button = Button(top,text=self.cday[i],fg="#363636",bg="#fff",bd=0,font=('Microsoft YaHei',10))
+                elif platform.system() == 'Linux':
+                    self.button = ttk.Button(top,text=self.cday[i],style="A.TButton")
+            self.button.place(x=100 + 100*n,y=160+70*m,width=100,height=70)
             self.button_list.append(self.button)
-        
-        ttk.Button(top,text="◀",command = self.pre_Cal).place(x=255*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
-        ttk.Button(top,text="▶",command = self.next_Cal).place(x=285*self.dpi,y=65*self.dpi,width=30*self.dpi,height=45*self.dpi)
-        ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=54*self.dpi,width=315*self.dpi,height=2*self.dpi)
-        ttk.Button(top,text="位置和字号设置",command = self.setCal,style="Set.TButton").place(x=0,y=410*self.dpi,width=315*self.dpi,height=45*self.dpi)
-    
-        ttk.Label(top, text="左右",anchor='center').place(x=10*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-        self.firstEntry = StringVar(value=config['lright'])
-        self.lright = ttk.Entry(top,justify='center',textvariable=self.firstEntry).place(x=60*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-        ttk.Label(top, text="上下",anchor='center').place(x=110*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-        self.secondEntry = StringVar(value=config['tbottom'])
-        self.tbottom = ttk.Entry(top,justify='center',textvariable=self.secondEntry).place(x=160*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-        ttk.Label(top, text="字号",anchor='center').place(x=210*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-        self.thirdEntry = StringVar(value=config['fontSize'])
-        self.fontSize = ttk.Entry(top,justify='center',textvariable=self.thirdEntry).place(x=260*self.dpi,y=465*self.dpi,width=45*self.dpi,height=30*self.dpi)
-    
-        ttk.Button(top,text="保存",command = self.setSave,style="Set.TButton").place(x=0*self.dpi,y=500*self.dpi,width=315*self.dpi,height=40*self.dpi)
-        
-        top.bind('<FocusOut>', self.lossfocus)   # 失去焦点时，关闭窗口
 
 #**实现具体的事件处理回调函数****
 class Application(Application_ui):
     def __init__(self, master=None):
         Application_ui.__init__(self, master)
 
-    def lossfocus(self, event=None):
-        if event.widget == top:
-            top.destroy()
+    def close(self, event=None):
+        top.destroy()
 
-    def pre_Cal(self, event=None):
+    def pre_year(self, event=None):
         for b in self.button_list:
             b.destroy()
-        self.ym = self.label1.cget("text")
-        self.year = int(self.ym[0:4])
-        self.month = int(self.ym[5:7].replace('月','')) - 1
+        self.year = int(self.cyear.cget("text").replace('年','')) - 1
+        self.month = int(self.cmonth.cget("text").replace('月',''))
+        self.cyear.config(text=str(self.year)+"年")
+        self.cday = show_month(self.year, self.month, 1)[-1]
+        self.addButton(self.cday)
+
+    def next_year(self, event=None):
+        for b in self.button_list:
+            b.destroy()
+        self.year = int(self.cyear.cget("text").replace('年','')) + 1
+        self.month = int(self.cmonth.cget("text").replace('月',''))
+        self.cyear.config(text=str(self.year)+"年")
+        self.cday = show_month(self.year, self.month, 1)[-1]
+        self.addButton(self.cday)
+
+    def pre_month(self, event=None):
+        for b in self.button_list:
+            b.destroy()
+        self.year = int(self.cyear.cget("text").replace('年',''))
+        self.month = int(self.cmonth.cget("text").replace('月','')) - 1
         if self.month == 0:
             self.year = self.year - 1
             self.month = 12
-        self.label1.config(text=str(self.year)+"年"+str(self.month)+"月")
-        self.rilitian = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.rilitian)
+        self.cyear.config(text=str(self.year)+"年")
+        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
+        self.cday = show_month(self.year, self.month, 1)[-1]
+        self.addButton(self.cday)
 
-    def next_Cal(self, event=None):
+    def next_month(self, event=None):
         for b in self.button_list:
             b.destroy()
-        self.ym = self.label1.cget("text")
-        self.year = int(self.ym[0:4])
-        self.month = int(self.ym[5:7].replace('月','')) + 1
+        self.year = int(self.cyear.cget("text").replace('年',''))
+        self.month = int(self.cmonth.cget("text").replace('月','')) + 1
         if self.month == 13:
             self.year = self.year + 1
             self.month = 1
-        self.label1.config(text=str(self.year)+"年"+str(self.month)+"月")
-        self.rilitian = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.rilitian)
-    
-    def setSave(self, event=None):
-        value1 = self.firstEntry.get()
-        value2 = self.secondEntry.get()
-        value3 = int(self.thirdEntry.get())
-        if value1[0] not in ['+','-']:
-            value1 = '+' + value1
-        if value2[0] not in ['+','-']:
-            value2 = '+' + value2
-        tempConfig = "# coding=utf-8\n\nconfig = {'lright':'%s','tbottom':'%s','fontSize':%d}"%(value1,value2,value3)
-        # 
-        if os.path.exists(os.getcwd()+'/.xfce-lunar/config.py'):
-            path = os.getcwd()+'/.xfce-lunar'
-        else:
-            path = os.getcwd()
-        with open('/home/poo/log','w') as t:
-            t.write(path+'/config.py')
-        with open(path+'/config.py','w',encoding='utf-8') as f:
-            f.write(tempConfig)
-        python = sys.executable
-        os.execl(python, python, * sys.argv)
-    
-    def setCal(self, event=None):
-        top.geometry('%dx%d'%(315*self.dpi,540*self.dpi))
+        self.cyear.config(text=str(self.year)+"年")
+        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
+        self.cday = show_month(self.year, self.month, 1)[-1]
+        self.addButton(self.cday)
+
+    def today(self, event=None):
+        for b in self.button_list:
+            b.destroy()
+        self.cdates = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
+        self.year = int(self.cdates[0][0:4])
+        self.month = int(self.cdates[0][5:7])
+        self.cyear.config(text=str(self.year)+"年")
+        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
+        self.cday = show_month(self.year, self.month, 1)[-1]
+        self.addButton(self.cday)
 
 if __name__ == "__main__":
     top = Tk()

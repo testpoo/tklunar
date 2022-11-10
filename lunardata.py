@@ -245,16 +245,16 @@ def show_month(year, month, day):
     tm = datetime(year, month, day)
 
     (year, month, day) = get_ludar_date(tm)
-    nyr = "".join((str(tm.year),"年",str(tm.month),"月",str(tm.day),"日","  ",str(week_str(tm))))
-    nlnyr = "".join((lunar_year(year),"年","  ",change_year(year),"年",lunar_month(month),lunar_day(day))) # 根据数组索引确定
-    xinqi = ("一","二","三","四","五","六","日")
+    cdate = "".join((str(tm.year),"年",str(tm.month),"月",str(tm.day),"日"," ",str(week_str(tm))))
+    clunar = "".join((lunar_year(year),"年"," ",change_year(year),"年",lunar_month(month),lunar_day(day))) # 根据数组索引确定
+    cweek = ("一","二","三","四","五","六","日")
 
     c = calendar.Calendar(0)
     ds = [d for d in c.itermonthdays(tm.year, tm.month)]
 
     dspre,dsnext = pre_next(ds)
 
-    rilitian = []
+    cday = []
 
     if dspre > 0:
         tyear = tm.year
@@ -266,44 +266,44 @@ def show_month(year, month, day):
         for d in dspre:
             (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
             if add_solar_terms(tyear, tmonth, d):
-                rilitian.append('*' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
+                cday.append('*' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
             elif add_lunar_festival(year, month, day):
-                rilitian.append('*' + str(d) + '\n' + add_lunar_festival(year,month, day))
+                cday.append('*' + str(d) + '\n' + add_lunar_festival(year,month, day))
             elif add_festival(tmonth, d):
-                rilitian.append('*' + str(d) + '\n' + add_festival(tmonth, d))
+                cday.append('*' + str(d) + '\n' + add_festival(tmonth, d))
             else:
-                rilitian.append('*' + str(d) + '\n' + lunar_day1(month, day))
+                cday.append('*' + str(d) + '\n' + lunar_day1(month, day))
 
     for d in ds:
         if d != 0:
             (year, month, day) = get_ludar_date(datetime(tm.year, tm.month, d))
             if add_solar_terms(tm.year, tm.month, d):
-                rilitian.append('$' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
+                cday.append('$' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
             elif add_lunar_festival(year, month, day):
-                rilitian.append('@' + str(d) + '\n' + add_lunar_festival(year,month, day))
+                cday.append('@' + str(d) + '\n' + add_lunar_festival(year,month, day))
             elif add_festival(tm.month, d):
-                rilitian.append('@' + str(d) + '\n' + add_festival(tm.month, d))
+                cday.append('@' + str(d) + '\n' + add_festival(tm.month, d))
             else:
-                rilitian.append(str(d) + '\n' + lunar_day1(month, day))
+                cday.append(str(d) + '\n' + lunar_day1(month, day))
 
     tyear = tm.year
     tmonth = tm.month + 1
     if tmonth == 13:
         tyear = tyear + 1
         tmonth = 1
-    if len(rilitian) + dsnext < 42:
-        dsnext = [d for d in c.itermonthdays(tyear, tmonth) if d !=0][0:42-len(rilitian)]
+    if len(cday) + dsnext < 42:
+        dsnext = [d for d in c.itermonthdays(tyear, tmonth) if d !=0][0:42-len(cday)]
     else:
         dsnext = [d for d in c.itermonthdays(tyear, tmonth) if d !=0][0:dsnext]
     for d in dsnext:
         (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
         if add_solar_terms(tyear, tmonth, d):
-            rilitian.append('#' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
+            cday.append('#' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
         elif add_lunar_festival(year, month, day):
-            rilitian.append('#' + str(d) + '\n' + add_lunar_festival(year,month, day))
+            cday.append('#' + str(d) + '\n' + add_lunar_festival(year,month, day))
         elif add_festival(tmonth, d):
-            rilitian.append('#' + str(d) + '\n' + add_festival(tmonth, d))
+            cday.append('#' + str(d) + '\n' + add_festival(tmonth, d))
         else:
-            rilitian.append('#' + str(d) + '\n' + lunar_day1(month, day))
+            cday.append('#' + str(d) + '\n' + lunar_day1(month, day))
 
-    return nyr,nlnyr,xinqi,rilitian
+    return cdate,clunar,cweek,cday
