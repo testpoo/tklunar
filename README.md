@@ -14,5 +14,9 @@ python lunar.py
 python3 lunar.py
 ```
 
+### 展示
+![windows](windows.png)
+![linux](linux.png)
+
 ### 注意
 - 仅在debian11/testing xfce4.16桌面下测试通过，理论上来说其他有python3环境的Linux桌面也可以使用。
