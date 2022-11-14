@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from tkinter import *
-from tkinter import ttk
+from tkinter.ttk import *
 import os
 from lunardata import *
 
@@ -32,28 +32,29 @@ class Application_ui(Frame):
 
         self.cdate,self.clunar,self.cweek,self.cday = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
 
-        self.style = ttk.Style()
+        self.style = Style()
         self.style.theme_use('default')
         self.style.configure("Pn.TButton",foreground="#303133",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
         self.style.configure("To.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
         self.style.configure("Yd.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12,'bold'),anchor='center')
         self.style.configure("Ym.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12),anchor='center')
+        self.style.configure("Wk.TLabel",foreground="#363636",background="#eee",borderwidth=0,font=('',10),anchor='center')
 
-        ttk.Label(top, text=self.cdate + " "*10 + self.clunar,style="Yd.TLabel").place(x=110,y=0,width=700,height=40)
-        ttk.Separator(top,orient=HORIZONTAL).place(x=0,y=40,width=900,height=2)
+        Label(top, text=self.cdate + " "*10 + self.clunar,style="Yd.TLabel").place(x=110,y=0,width=700,height=40)
+        Separator(top,orient=HORIZONTAL).place(x=0,y=40,width=900,height=2)
 
-        self.preYear = ttk.Button(top,text="◀",command = self.pre_year,style="Pn.TButton").place(x=110,y=42,width=30,height=68)
-        self.cyear = ttk.Label(top, text=self.cdate[0:5],style="Ym.TLabel")
+        self.preYear = Button(top,text="◀",command = self.pre_year,style="Pn.TButton").place(x=110,y=42,width=30,height=68)
+        self.cyear = Label(top, text=self.cdate[0:5],style="Ym.TLabel")
         self.cyear.place(x=140,y=42,width=80,height=68)
-        self.nextYear = ttk.Button(top,text="▶",command = self.next_year,style="Pn.TButton").place(x=220,y=42,width=30,height=68)
-        self.preMonth = ttk.Button(top,text="◀",command = self.pre_month,style="Pn.TButton").place(x=250,y=42,width=30,height=68)
-        self.cmonth = ttk.Label(top, text=self.cdate[5:8],style="Ym.TLabel")
+        self.nextYear = Button(top,text="▶",command = self.next_year,style="Pn.TButton").place(x=220,y=42,width=30,height=68)
+        self.preMonth = Button(top,text="◀",command = self.pre_month,style="Pn.TButton").place(x=250,y=42,width=30,height=68)
+        self.cmonth = Label(top, text=self.cdate[5:8],style="Ym.TLabel")
         self.cmonth.place(x=280,y=42,width=60,height=68)
-        self.nextMonth = ttk.Button(top,text="▶",command = self.next_month,style="Pn.TButton").place(x=340,y=42,width=30,height=68)
-        self.today = ttk.Button(top,text="返回今天",command = self.today,style="To.TButton").place(x=690,y=42,width=100,height=68)
+        self.nextMonth = Button(top,text="▶",command = self.next_month,style="Pn.TButton").place(x=340,y=42,width=30,height=68)
+        self.today = Button(top,text="返回今天",command = self.today,style="To.TButton").place(x=690,y=42,width=100,height=68)
 
         for i in range(len(self.cweek)):
-            Label(top,text='周' + self.cweek[i],anchor='center',fg="#363636",bg="#eee",font=('',10)).place(x=100 + 100*i,y=110,width=100,height=50)
+            Label(top,text='周' + self.cweek[i],style="Wk.TLabel").place(x=100 + 100*i,y=110,width=100,height=50)
         
         self.button_list = []
         self.addButton(self.cday)
@@ -68,23 +69,23 @@ class Application_ui(Frame):
         for i in range(len(self.cday)):
             m,n = divmod(i,7)
             if cday[i].split('\n')[0].strip() == str(datetime.now().day):
-                self.button = ttk.Button(top,text=self.cday[i],style=".TButton")
+                self.button = Button(top,text=self.cday[i],style=".TButton")
             elif cday[i][0] == '*':
-                self.button = ttk.Button(top,text=self.cday[i][1:],style="*.TButton")
+                self.button = Button(top,text=self.cday[i][1:],style="*.TButton")
             elif cday[i][0] == '#':
-                self.button = ttk.Button(top,text=self.cday[i][1:],style="*.TButton")
+                self.button = Button(top,text=self.cday[i][1:],style="*.TButton")
             elif cday[i][0] == '@':
                 if cday[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = ttk.Button(top,text=self.cday[i][1:],style="@.TButton")
+                    self.button = Button(top,text=self.cday[i][1:],style="@.TButton")
                 else:
-                    self.button = ttk.Button(top,text=self.cday[i][1:],style="@.TButton")
+                    self.button = Button(top,text=self.cday[i][1:],style="@.TButton")
             elif cday[i][0] == '$':
                 if cday[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = ttk.Button(top,text=self.cday[i][1:],style="$.TButton")
+                    self.button = Button(top,text=self.cday[i][1:],style="$.TButton")
                 else:
-                    self.button = ttk.Button(top,text=self.cday[i][1:],style="$.TButton")
+                    self.button = Button(top,text=self.cday[i][1:],style="$.TButton")
             else:
-                self.button = ttk.Button(top,text=self.cday[i],style="A.TButton")
+                self.button = Button(top,text=self.cday[i],style="A.TButton")
             self.button.place(x=100 + 100*n,y=160+70*m,width=100,height=70)
             self.button_list.append(self.button)
 
