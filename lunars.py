@@ -17,15 +17,16 @@ class Application_ui(Frame):
         self.createWidgets()
         self.position()
 
-
     def position(self):
         top.resizable(False,False)
-        curWidth = 900
-        curHeight = 600
+        curWidth = 350
+        curHeight = 458
         scnWidth,scnHeight = top.maxsize()
-        tmpplace = '%dx%d+%d+%d'%(curWidth,curHeight,(scnWidth-curWidth)/2,(scnHeight-curHeight)/2)
+        tmpplace = '%dx%d-%d-%d'%(curWidth,curHeight,0,30)
         top.geometry(tmpplace)
-        top.iconphoto(False, PhotoImage(file=os.getcwd() + '/calendar.png'))
+        #top.attributes('-type', 'dock')
+        top.attributes("-topmost", True)
+        top.focus_force()
 
     def createWidgets(self):
         top = self.winfo_toplevel()
@@ -36,28 +37,30 @@ class Application_ui(Frame):
         self.style.theme_use('default')
         self.style.configure("Pn.TButton",foreground="#303133",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
         self.style.configure("To.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
-        self.style.configure("Yd.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12,'bold'),anchor='center')
-        self.style.configure("Ym.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12),anchor='center')
-        self.style.configure("Wk.TLabel",foreground="#363636",background="#eee",borderwidth=0,font=('',10),anchor='center')
+        self.style.configure("Yd.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12,'bold'),anchor=CENTER)
+        self.style.configure("Ym.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12),anchor=CENTER)
+        self.style.configure("Wk.TLabel",foreground="#363636",background="#eee",borderwidth=0,font=('',10),anchor=CENTER)
 
-        Label(top, text=self.cdate + " "*10 + self.clunar,style="Yd.TLabel").place(x=110,y=0,width=700,height=40)
-        Separator(top,orient=HORIZONTAL).place(x=0,y=40,width=900,height=2)
+        Label(top, text="  "+self.cdate+"\n  "+self.clunar,style="Yd.TLabel").place(x=0,y=0,width=350,height=60)
+        Separator(top,orient=HORIZONTAL).place(x=0,y=60,width=350,height=2)
 
-        self.preYear = Button(top,text="◀",command = self.pre_year,style="Pn.TButton").place(x=110,y=42,width=30,height=68)
+        self.preYear = Button(top,text="◀",command = self.pre_year,style="Pn.TButton").place(x=0,y=62,width=30,height=48)
         self.cyear = Label(top, text=self.cdate[0:5],style="Ym.TLabel")
-        self.cyear.place(x=140,y=42,width=80,height=68)
-        self.nextYear = Button(top,text="▶",command = self.next_year,style="Pn.TButton").place(x=220,y=42,width=30,height=68)
-        self.preMonth = Button(top,text="◀",command = self.pre_month,style="Pn.TButton").place(x=250,y=42,width=30,height=68)
+        self.cyear.place(x=30,y=62,width=80,height=48)
+        self.nextYear = Button(top,text="▶",command = self.next_year,style="Pn.TButton").place(x=110,y=62,width=30,height=48)
+        self.preMonth = Button(top,text="◀",command = self.pre_month,style="Pn.TButton").place(x=140,y=62,width=30,height=48)
         self.cmonth = Label(top, text=self.cdate[5:8],style="Ym.TLabel")
-        self.cmonth.place(x=280,y=42,width=60,height=68)
-        self.nextMonth = Button(top,text="▶",command = self.next_month,style="Pn.TButton").place(x=340,y=42,width=30,height=68)
-        self.today = Button(top,text="返回今天",command = self.today,style="To.TButton").place(x=690,y=42,width=100,height=68)
+        self.cmonth.place(x=170,y=62,width=60,height=48)
+        self.nextMonth = Button(top,text="▶",command = self.next_month,style="Pn.TButton").place(x=230,y=62,width=30,height=48)
+        self.today = Button(top,text="返回今天",command = self.today,style="To.TButton").place(x=260,y=62,width=100,height=48)
 
         for i in range(len(self.cweek)):
-            Label(top,text='周' + self.cweek[i],style="Wk.TLabel").place(x=100 + 100*i,y=110,width=100,height=50)
+            Label(top,text='周' + self.cweek[i],style="Wk.TLabel").place(x=50*i,y=110,width=50,height=50)
         
         self.button_list = []
         self.addButton(self.cday)
+        
+        top.bind('<FocusOut>', self.lossfocus)
         
     def addButton(self,cday):
 
@@ -86,13 +89,17 @@ class Application_ui(Frame):
                     self.button = Button(top,text=self.cday[i][1:],style="$.TButton")
             else:
                 self.button = Button(top,text=self.cday[i],style="A.TButton")
-            self.button.place(x=100 + 100*n,y=160+70*m,width=100,height=70)
+            self.button.place(x=50*n,y=160 + 50*m,width=50,height=50)
             self.button_list.append(self.button)
 
 #**实现具体的事件处理回调函数****
 class Application(Application_ui):
     def __init__(self, master=None):
         Application_ui.__init__(self, master)
+
+    def lossfocus(self, event=None):
+        if event.widget == top:
+            top.destroy()
 
     def pre_year(self, event=None):
         for b in self.button_list:
