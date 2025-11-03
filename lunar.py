@@ -1,154 +1,252 @@
 #!/usr/bin/env python3
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
-from tkinter import *
-from tkinter.ttk import *
-import os
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
+import calendar
+import re
 from lunardata import *
 
-__author__ = {'name' : 'TestPoo', 'created' : '2022-05-05', 'modify' : '2022-11-14'}
-
-#**实现界面功能****
-class Application_ui(Frame):
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.master.title('万年历')
-        self.master["bg"]='#fff'
-        self.createWidgets()
-        self.position()
-
-
-    def position(self):
-        top.resizable(False,False)
-        curWidth = 900
-        curHeight = 600
-        scnWidth,scnHeight = top.maxsize()
-        tmpplace = '%dx%d+%d+%d'%(curWidth,curHeight,(scnWidth-curWidth)/2,(scnHeight-curHeight)/2)
-        top.geometry(tmpplace)
-        top.iconphoto(False, PhotoImage(file=os.getcwd() + '/calendar.png'))
-
-    def createWidgets(self):
-        top = self.winfo_toplevel()
-
+class LinuxCalendarApp:
+    def __init__(self):
+        # 初始化当前日期
+        self.current_date = date.today()
+        self.selected_date = self.current_date
         self.cdate,self.clunar,self.cweek,self.cday = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
-
-        self.style = Style()
-        self.style.theme_use('default')
-        self.style.configure("Pn.TButton",foreground="#303133",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
-        self.style.configure("To.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('',12),justify='center',relief=FLAT)
-        self.style.configure("Yd.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12,'bold'),anchor='center')
-        self.style.configure("Ym.TLabel",foreground="#161616",background="#fff",borderwidth=0,font=('',12),anchor='center')
-        self.style.configure("Wk.TLabel",foreground="#363636",background="#eee",borderwidth=0,font=('',10),anchor='center')
-
-        Label(top, text=self.cdate + " "*10 + self.clunar,style="Yd.TLabel").place(x=110,y=0,width=700,height=40)
-        Separator(top,orient=HORIZONTAL).place(x=0,y=40,width=900,height=2)
-
-        self.preYear = Button(top,text="◀",command = self.pre_year,style="Pn.TButton").place(x=110,y=42,width=30,height=68)
-        self.cyear = Label(top, text=self.cdate[0:5],style="Ym.TLabel")
-        self.cyear.place(x=140,y=42,width=80,height=68)
-        self.nextYear = Button(top,text="▶",command = self.next_year,style="Pn.TButton").place(x=220,y=42,width=30,height=68)
-        self.preMonth = Button(top,text="◀",command = self.pre_month,style="Pn.TButton").place(x=250,y=42,width=30,height=68)
-        self.cmonth = Label(top, text=self.cdate[5:8],style="Ym.TLabel")
-        self.cmonth.place(x=280,y=42,width=60,height=68)
-        self.nextMonth = Button(top,text="▶",command = self.next_month,style="Pn.TButton").place(x=340,y=42,width=30,height=68)
-        self.today = Button(top,text="返回今天",command = self.today,style="To.TButton").place(x=690,y=42,width=100,height=68)
-
-        for i in range(len(self.cweek)):
-            Label(top,text='周' + self.cweek[i],style="Wk.TLabel").place(x=100 + 100*i,y=110,width=100,height=50)
         
-        self.button_list = []
-        self.addButton(self.cday)
+        # 创建主窗口
+        self.window = Gtk.Window(title="日历")
+        self.window.set_default_size(450, 400)
+        self.window.connect("destroy", Gtk.main_quit)
+        self.window.set_icon_from_file("calendar.png")
         
-    def addButton(self,cday):
+        # 创建主布局
+        self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        self.window.add(self.main_box)
 
-        self.style.configure(".TButton",foreground="#fff",background="#2ca7f8",borderwidth=0,font=('',10,'bold'),justify='center',relief=FLAT)
-        self.style.configure("*.TButton",foreground="#a8a8a8",background="#fff",borderwidth=0,font=('',10),justify='center',relief=FLAT)
-        self.style.configure("@.TButton",foreground="#e7493e",background="#fff",borderwidth=0,font=('',10,'bold'),justify='center',relief=FLAT)
-        self.style.configure("$.TButton",foreground="#2ca7f8",background="#fff",borderwidth=0,font=('',10,'bold'),justify='center',relief=FLAT)
-        self.style.configure("A.TButton",foreground="#363636",background="#fff",borderwidth=0,font=('',10),justify='center',relief=FLAT)
+        # 创建标签栏
+        self.label_box = Gtk.Box(spacing=20)
+        self.main_box.pack_start(self.label_box, False, False, 1)
+
+        self.date_label = Gtk.Label(label=str(self.cdate))
+        self.date_label.set_size_request(225,50)
+        self.date_label.set_justify(Gtk.Justification.CENTER)
+        self.label_box.pack_start(self.date_label, False, False, 0)
+
+        self.lunar_label = Gtk.Label(label=str(self.clunar))
+        self.lunar_label.set_size_request(225,50)
+        self.lunar_label.set_justify(Gtk.Justification.CENTER)
+        self.label_box.pack_start(self.lunar_label, False, False, 0)
+        
+        # 创建按钮栏
+        self.button_box = Gtk.Box(spacing=20)
+        self.main_box.pack_start(self.button_box, False, False, 0)
+
+        # 上一年按钮
+        self.prev_year_button = Gtk.Button(label="◀")
+        self.prev_year_button.connect("clicked", self.on_prev_year_clicked)
+        self.prev_year_button.get_style_context().add_class('flat')
+        self.button_box.pack_start(self.prev_year_button, False, False, 10)
+
+        self.year_label = Gtk.Label(label=str(self.current_date.year))
+        self.year_label.set_justify(Gtk.Justification.CENTER)
+        self.button_box.pack_start(self.year_label, False, False, 0)
+        
+        # 下一年按钮
+        self.next_year_button = Gtk.Button(label="▶")
+        self.next_year_button.connect("clicked", self.on_next_year_clicked)
+        self.next_year_button.get_style_context().add_class('flat')
+        self.button_box.pack_start(self.next_year_button, False, False, 10)
+        
+        # 上一个月按钮
+        self.prev_month_button = Gtk.Button(label="◀")
+        self.prev_month_button.connect("clicked", self.on_prev_month_clicked)
+        self.prev_month_button.get_style_context().add_class('flat')
+        self.button_box.pack_start(self.prev_month_button, False, False, 10)
+        
+        self.month_label = Gtk.Label(label=str(self.current_date.month))
+        self.month_label.set_justify(Gtk.Justification.CENTER)
+        self.button_box.pack_start(self.month_label, False, False, 0)
+
+        # 下一个月按钮
+        self.next_month_button = Gtk.Button(label="▶")
+        self.next_month_button.connect("clicked", self.on_next_month_clicked)
+        self.next_month_button.get_style_context().add_class('flat')
+        self.button_box.pack_start(self.next_month_button, False, False, 10)
+
+        # 今天按钮
+        self.today_button = Gtk.Button(label="今天")
+        self.today_button.connect("clicked", self.on_today_clicked)
+        self.today_button.get_style_context().add_class('flat')
+        self.button_box.pack_start(self.today_button, False, False, 10)
+        
+        # 创建日历网格
+        self.create_calendar_grid(self.cday)
+        
+        # 显示所有组件
+        self.window.show_all()
+    
+    def create_calendar_grid(self,cday):
+
+        """创建日历网格视图"""
+        # 移除已有的日历网格（如果存在）
+        if hasattr(self, 'calendar_grid'):
+            self.main_box.remove(self.calendar_grid)
+        
+        # 创建新的网格
+        self.calendar_grid = Gtk.Grid(column_spacing=1, row_spacing=1)
+        self.main_box.pack_start(self.calendar_grid, True, True, 0)
+        
+        # 设置网格样式
+        self.calendar_grid.set_border_width(0)
+        
+        # 绘制星期标题
+        for i, day in enumerate(self.cweek):
+            label = Gtk.Label(label="周"+day)
+            label.set_halign(Gtk.Align.CENTER)
+            label.set_valign(Gtk.Align.CENTER)
+            label.set_name("weekday-label")
+            self.calendar_grid.attach(label, i, 0, 1, 1)
+            label.set_size_request(75, 50)
+        
+        # 获取当前月份数据
+        year = self.current_date.year
+        month = self.current_date.month
+        
+        # 绘制日期按钮
         for i in range(len(self.cday)):
             m,n = divmod(i,7)
-            if cday[i].split('\n')[0].strip() == str(datetime.now().day):
-                self.button = Button(top,text=self.cday[i],style=".TButton")
-            elif cday[i][0] == '*':
-                self.button = Button(top,text=self.cday[i][1:],command = self.pre_month,style="*.TButton")
-            elif cday[i][0] == '#':
-                self.button = Button(top,text=self.cday[i][1:],command = self.next_month,style="*.TButton")
-            elif cday[i][0] == '@':
-                if cday[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = Button(top,text=self.cday[i][1:],style="@.TButton")
-                else:
-                    self.button = Button(top,text=self.cday[i][1:],style="@.TButton")
-            elif cday[i][0] == '$':
-                if cday[i][1:].split('\n')[0] == str(datetime.now().day):
-                    self.button = Button(top,text=self.cday[i][1:],style="$.TButton")
-                else:
-                    self.button = Button(top,text=self.cday[i][1:],style="$.TButton")
+            # 创建日期按钮
+            if self.cday[i].split('\n')[0] == str(datetime.now().day) and self.current_date.month == datetime.now().month and self.current_date.year == datetime.now().year:
+                btn = Gtk.Button(label=str(self.cday[i]))
+                btn.set_name("today")
+            elif self.cday[i][0] == '♩':
+                btn = Gtk.Button(label=str(self.cday[i][1:]))
+                btn.set_name("pre_month")
+                # 绑定点击事件
+                btn.connect("clicked", self.on_prev_month_clicked)
+            elif self.cday[i][0] == '♪':
+                btn = Gtk.Button(label=str(self.cday[i][1:]))
+                btn.set_name(f"solarterms")
+            elif self.cday[i][0] == '♫':
+                btn = Gtk.Button(label=str(self.cday[i][1:]))
+                btn.set_name(f"festival")
+            elif self.cday[i][0] == '♬':
+                btn = Gtk.Button(label=str(self.cday[i][1:]))
+                btn.set_name(f"next_month")
+                # 绑定点击事件
+                btn.connect("clicked", self.on_next_month_clicked)
             else:
-                self.button = Button(top,text=self.cday[i],style="A.TButton")
-            self.button.place(x=100 + 100*n,y=160+70*m,width=100,height=70)
-            self.button_list.append(self.button)
+                btn = Gtk.Button(label=str(self.cday[i]))
+                btn.set_name(f"day-btn-{self.cday[i]}")
+                # 绑定点击事件
+                btn.connect("clicked", self.on_day_clicked, year, month, int(self.cday[i].split('\n')[0]))
+            date_btn = btn.get_child()
+            date_btn.set_line_wrap(True)
+            date_btn.set_justify(Gtk.Justification.CENTER)
+            btn.get_style_context().add_class('flat')
+            btn.set_halign(Gtk.Align.CENTER)
+            btn.set_valign(Gtk.Align.CENTER)
+            btn.set_size_request(75, 75)
+                    
+            # 标记选中的日期
+            if (self.selected_date.year == year and
+                self.selected_date.month == month and
+                self.selected_date.day == day):
+                btn.get_style_context().add_class("selected")
+                    
+            self.calendar_grid.attach(btn, n, m+1, 1, 1)
+        
+        # 应用CSS样式
+        css_provider = Gtk.CssProvider()
+        css = """
+            #weekday-label {
+                font-weight: bold;
+                font-size: 14px;
+            }
+            #next_month,#pre_month {
+                color: rgba(168,168,168,1.00);
+            }
+            #festival {
+                color: rgba(231,73,62,1.00);
+            }
+            #solarterms {
+                color: rgba(44,167,248,1.00);
+            }
+            #today {
+                color: white;
+                background: rgba(44,167,248,1.00);
+                font-weight: bold;
+            }
+            .selected {
+                background-color: #a8d1ff;
+            }
+            button {
+                border-radius: 0px;
+            }
+        """
+        css_provider.load_from_data(css.encode())
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        
+        # 显示日历网格
+        self.calendar_grid.show_all()
 
-#**实现具体的事件处理回调函数****
-class Application(Application_ui):
-    def __init__(self, master=None):
-        Application_ui.__init__(self, master)
+    def on_prev_year_clicked(self, widget):
+        """切换到上一年"""
+        self.current_date = self.current_date.replace(year=self.current_date.year - 1)
+        self.year_label.set_text(str(self.current_date.year))
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
+    
+    def on_next_year_clicked(self, widget):
+        """切换到下一年"""
+        self.current_date = self.current_date.replace(year=self.current_date.year + 1)
+        self.year_label.set_text(str(self.current_date.year))
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
 
-    def pre_year(self, event=None):
-        for b in self.button_list:
-            b.destroy()
-        self.year = int(self.cyear.cget("text").replace('年','')) - 1
-        self.month = int(self.cmonth.cget("text").replace('月',''))
-        self.cyear.config(text=str(self.year)+"年")
-        self.cday = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.cday)
-
-    def next_year(self, event=None):
-        for b in self.button_list:
-            b.destroy()
-        self.year = int(self.cyear.cget("text").replace('年','')) + 1
-        self.month = int(self.cmonth.cget("text").replace('月',''))
-        self.cyear.config(text=str(self.year)+"年")
-        self.cday = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.cday)
-
-    def pre_month(self, event=None):
-        for b in self.button_list:
-            b.destroy()
-        self.year = int(self.cyear.cget("text").replace('年',''))
-        self.month = int(self.cmonth.cget("text").replace('月','')) - 1
-        if self.month == 0:
-            self.year = self.year - 1
-            self.month = 12
-        self.cyear.config(text=str(self.year)+"年")
-        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
-        self.cday = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.cday)
-
-    def next_month(self, event=None):
-        for b in self.button_list:
-            b.destroy()
-        self.year = int(self.cyear.cget("text").replace('年',''))
-        self.month = int(self.cmonth.cget("text").replace('月','')) + 1
-        if self.month == 13:
-            self.year = self.year + 1
-            self.month = 1
-        self.cyear.config(text=str(self.year)+"年")
-        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
-        self.cday = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.cday)
-
-    def today(self, event=None):
-        for b in self.button_list:
-            b.destroy()
-        self.cdates = show_month(datetime.now().year, datetime.now().month, datetime.now().day)
-        self.year = int(self.cdates[0][0:4])
-        self.month = int(self.cdates[0][5:7])
-        self.cyear.config(text=str(self.year)+"年")
-        self.cmonth.config(text=str(self.month if self.month >= 10 else "0" + str(self.month))+"月")
-        self.cday = show_month(self.year, self.month, 1)[-1]
-        self.addButton(self.cday)
+    def on_prev_month_clicked(self, widget):
+        """切换到上一个月"""
+        if self.current_date.month == 1:
+            self.current_date = self.current_date.replace(year=self.current_date.year - 1, month=12)
+            self.year_label.set_text(str(self.current_date.year))
+        else:
+            self.current_date = self.current_date.replace(month=self.current_date.month - 1)
+        self.month_label.set_text(str(self.current_date.month))
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
+    
+    def on_next_month_clicked(self, widget):
+        """切换到下一个月"""
+        if self.current_date.month == 12:
+            self.current_date = self.current_date.replace(year=self.current_date.year + 1, month=1)
+            self.year_label.set_text(str(self.current_date.year))
+        else:
+            self.current_date = self.current_date.replace(month=self.current_date.month + 1)
+        self.month_label.set_text(str(self.current_date.month))
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
+    
+    def on_today_clicked(self, widget):
+        """切换到今天"""
+        self.current_date = date.today()
+        self.selected_date = self.current_date
+        self.year_label.set_text(str(self.current_date.year))
+        self.month_label.set_text(str(self.current_date.month))
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
+    
+    def on_day_clicked(self, widget, year, month, day):
+        """选择日期"""
+        self.selected_date = date(year, month, day)
+        self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
+        self.create_calendar_grid(self.cday)
 
 if __name__ == "__main__":
-    top = Tk()
-    Application(top).mainloop()
+    app = LinuxCalendarApp()
+    Gtk.main()

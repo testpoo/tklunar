@@ -271,23 +271,23 @@ def show_month(year, month, day):
         for d in dspre:
             (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
             if add_solar_terms(tyear, tmonth, d):
-                cday.append('*' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
+                cday.append('♩' + str(d) + '\n' + add_solar_terms(tyear, tmonth, day))
             elif add_lunar_festival(year, month, day):
-                cday.append('*' + str(d) + '\n' + add_lunar_festival(year,month, day))
+                cday.append('♩' + str(d) + '\n' + add_lunar_festival(year,month, day))
             elif add_festival(tmonth, d):
-                cday.append('*' + str(d) + '\n' + add_festival(tmonth, d))
+                cday.append('♩' + str(d) + '\n' + add_festival(tmonth, d))
             else:
-                cday.append('*' + str(d) + '\n' + lunar_day1(month, day))
+                cday.append('♩' + str(d) + '\n' + lunar_day1(month, day))
 
     for d in ds:
         if d != 0:
             (year, month, day) = get_ludar_date(datetime(tm.year, tm.month, d))
             if add_solar_terms(tm.year, tm.month, d):
-                cday.append('$' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
+                cday.append('♪' + str(d) + '\n' + add_solar_terms(tm.year, tm.month, d))
             elif add_lunar_festival(year, month, day):
-                cday.append('@' + str(d) + '\n' + add_lunar_festival(year,month, day))
+                cday.append('♫' + str(d) + '\n' + add_lunar_festival(year,month, day))
             elif add_festival(tm.month, d):
-                cday.append('@' + str(d) + '\n' + add_festival(tm.month, d))
+                cday.append('♫' + str(d) + '\n' + add_festival(tm.month, d))
             else:
                 cday.append(str(d) + '\n' + lunar_day1(month, day))
 
@@ -303,12 +303,12 @@ def show_month(year, month, day):
     for d in dsnext:
         (year, month, day) = get_ludar_date(datetime(tyear, tmonth, d))
         if add_solar_terms(tyear, tmonth, d):
-            cday.append('#' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
+            cday.append('♬' + str(d) + '\n' + add_solar_terms(tyear, tmonth, d))
         elif add_lunar_festival(year, month, day):
-            cday.append('#' + str(d) + '\n' + add_lunar_festival(year,month, day))
+            cday.append('♬' + str(d) + '\n' + add_lunar_festival(year,month, day))
         elif add_festival(tmonth, d):
-            cday.append('#' + str(d) + '\n' + add_festival(tmonth, d))
+            cday.append('♬' + str(d) + '\n' + add_festival(tmonth, d))
         else:
-            cday.append('#' + str(d) + '\n' + lunar_day1(month, day))
+            cday.append('♬' + str(d) + '\n' + lunar_day1(month, day))
 
     return cdate,clunar,cweek,cday

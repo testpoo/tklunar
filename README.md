@@ -3,7 +3,7 @@
 
 ### 依赖
 ```
-python3-tk
+python3-gi
 ```
 
 ### 运行
@@ -19,4 +19,4 @@ python3 lunar.py
 ![linux](linux.png)
 
 ### 注意
-- 仅在debian11/testing xfce4.16桌面下测试通过，理论上来说其他有python3环境的Linux桌面也可以使用。
+- 在debian13/testing xfce4.20桌面下测试通过，理论上来说其他有python3环境的Linux桌面也可以使用。
