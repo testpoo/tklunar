@@ -8,7 +8,7 @@ python3-gi
 
 ### 运行
 ```
-python3 lunar.py
+python3 xflunar.py
 ```
 
 ### 展示
