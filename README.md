@@ -1,5 +1,5 @@
 # xfce-lunar
-桌面版本农历日历，支持Windows和Linux
+桌面版农历日历，支持Linux
 
 ### 依赖
 ```
@@ -8,14 +8,10 @@ python3-gi
 
 ### 运行
 ```
-# win
-python lunar.py
-# linux
 python3 lunar.py
 ```
 
 ### 展示
-![windows](windows.png)
 ![linux](linux.png)
 
 ### 注意
