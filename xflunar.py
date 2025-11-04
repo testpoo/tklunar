@@ -8,7 +8,7 @@ import calendar
 import re
 from lunardata import *
 
-class LinuxCalendarApp:
+class Calendar:
     def __init__(self):
         # 初始化当前日期
         self.current_date = date.today()
@@ -261,5 +261,5 @@ class LinuxCalendarApp:
         self.create_calendar_grid(self.cday)
 
 if __name__ == "__main__":
-    app = LinuxCalendarApp()
+    app = Calendar()
     Gtk.main()
