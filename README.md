@@ -8,7 +8,8 @@ python3-gi
 
 ### 运行
 ```
-python3 xflunar.py
+python3 xflunar.py 0 或者 python3 xflunar.py 1
+# 0表示正常日历，有菜单栏和任务栏，非0表示传统模式，没有菜单栏和任务栏
 ```
 
 ### 展示

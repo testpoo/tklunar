@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-import gi,re,os,calendar
+import gi,re,os,calendar,sys
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 from lunardata import *
-
-flag = 1
 
 class Calendar:
     def __init__(self):
@@ -20,12 +18,9 @@ class Calendar:
         self.window.set_default_size(330, 350)
         self.window.connect("destroy", Gtk.main_quit)
 
-        if flag == 0:
+        if sys.argv[1] == '0':
             self.window.set_position(Gtk.WindowPosition.CENTER)  # 窗口居中
-            if os.path.exists(os.path.join(os.getcwd(),"calendar.svg")):
-                self.window.set_icon_from_file("calendar.svg")
-            else:
-                self.window.set_icon_from_file("./xflunar/calendar.svg")
+            self.window.set_icon_from_file(os.path.join(os.path.dirname(os.path.abspath(__file__)),"calendar.svg"))
         else:
             self.window.set_decorated(False)  # 禁用窗口装饰（无标题栏、无任务栏图标关联）
             self.window.set_skip_taskbar_hint(True)  # 告诉系统：跳过任务栏显示
