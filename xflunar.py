@@ -18,7 +18,7 @@ class Calendar:
         self.window.set_default_size(330, 350)
         self.window.connect("destroy", Gtk.main_quit)
 
-        if sys.argv[1] == '0':
+        if len(sys.argv) == 1:
             self.window.set_position(Gtk.WindowPosition.CENTER)  # 窗口居中
             self.window.set_icon_from_file(os.path.join(os.path.dirname(os.path.abspath(__file__)),"calendar.svg"))
         else:
