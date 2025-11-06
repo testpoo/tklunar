@@ -12,7 +12,7 @@ python3-gi
 python3 xflunar.py
 
 # 有参数表示传统模式，没有菜单栏和任务栏
-python3 xflunar.py rightbottom # 位置右下
+python3 xflunar.py bottomright # 位置右下
 python3 xflunar.py upperright  # 位置右上
 python3 xflunar.py upperleft   # 位置左上
 python3 xflunar.py bottomleft  # 位置左下

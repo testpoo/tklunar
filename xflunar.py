@@ -305,7 +305,7 @@ class Calendar:
         y = monitor_workarea.height - window_height
 
         # 移动窗口到计算后的坐标
-        if location == 'rightbottom':
+        if location == 'bottomright':
             self.window.move(x, y)
         elif location == "upperright":
             self.window.move(x, 0)
