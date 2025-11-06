@@ -25,7 +25,7 @@ class Calendar:
             self.window.set_decorated(False)  # 禁用窗口装饰（无标题栏、无任务栏图标关联）
             self.window.set_skip_taskbar_hint(True)  # 告诉系统：跳过任务栏显示
             self.window.set_skip_pager_hint(True)    # 告诉系统：跳过 Alt+Tab 切换列表（可选）
-            self.move_to_bottom_right()  # 窗口居右下角
+            self.move_to_location(sys.argv[1])  # 窗口居右下角
             self.window.connect("focus-out-event", self.on_focus_lost)  # 监听「失去焦点」信号，触发关闭程序
             self.window.connect("key-press-event", self.on_key_press)  # 绑定键盘按下事件，监听 ESC 键
 
@@ -290,8 +290,7 @@ class Calendar:
         self.cday = show_month(self.current_date.year, self.current_date.month, self.current_date.day)[-1]
         self.create_calendar_grid(self.cday)
 
-    def move_to_bottom_right(self):
-        """计算屏幕右下角坐标，移动窗口到指定位置"""
+    def move_to_location(self, location):
         # 获取屏幕可用区域（排除任务栏/Dock，避免窗口被遮挡）
         display = Gdk.Display.get_default()
         monitor = display.get_primary_monitor()
@@ -301,14 +300,21 @@ class Calendar:
         window_width = self.window.get_default_size()[0]
         window_height = self.window.get_default_size()[1]
 
-        # 计算右下角坐标：
-        # x = 屏幕可用宽度 - 窗口宽度（右对齐）
-        # y = 屏幕可用高度 - 窗口高度（底对齐）
+        # 计算坐标：
         x = monitor_workarea.width - window_width
         y = monitor_workarea.height - window_height
 
         # 移动窗口到计算后的坐标
-        self.window.move(x, y)
+        if location == 'rightbottom':
+            self.window.move(x, y)
+        elif location == "upperright":
+            self.window.move(x, 0)
+        elif location == "bottomleft":
+            self.window.move(0, y)
+        elif location == "upperleft":
+            self.window.move(0, 0)
+        else:
+            self.window.set_position(Gtk.WindowPosition.CENTER)
 
     def on_focus_lost(self, widget, event):
         """失去焦点时的回调函数：关闭程序"""
